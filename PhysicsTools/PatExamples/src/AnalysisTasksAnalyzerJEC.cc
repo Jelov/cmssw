@@ -57,8 +57,10 @@ AnalysisTasksAnalyzerJEC::analyze(const edm::EventBase& event)
        }
        edm::LogInfo("hint2")<<"\n \n  *************** HINT 2 ************** \n You did it correctly congratulations!!!!  And you found out above which JEC levels are saved within the jets. We want to investigate these in the following with the response function. At the moment you are trying to access the JEC Level: "  << jecLevel_ << ". Does it exist? This causes the error below (see 'Exception Message')! Correct the label of the correction level to an existing one that you are interested in. \n ******************************************* \n " <<std::endl;
 
-     if(jet_it->genParticlesSize()>0){
-         hists_["Response" ]->Fill( jet_it->correctedJet(jecLevel_).eta(), jet_it->correctedJet(jecLevel_).pt()/ jet_it->genParticle(0)->pt());
+     //if(jet_it->genParticlesSize()>0){
+     if( jet_it->genJet() != 0  ){
+         //hists_["Response" ]->Fill( jet_it->correctedJet(jecLevel_).eta(), jet_it->correctedJet(jecLevel_).pt()/ jet_it->genParticle(0)->pt());
+         hists_["Response" ]->Fill( jet_it->correctedJet(jecLevel_).eta(), jet_it->correctedJet(jecLevel_).pt()/ jet_it->genJet()->pt());
      }
      jetInEvents_+=1;
   }

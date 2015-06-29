@@ -27,7 +27,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.jecAnalyzer = cms.EDAnalyzer("WrappedEDAnalysisTasksAnalyzerJEC",
   Jets = cms.InputTag("selectedPatJetsPFlow"), 
   jecLevel=cms.string("L3Absolute"),
-  jecSetLabel= cms.string('patJetCorrFactors'),
+  jecSetLabel= cms.string('patJetCorrFactorsPFlow'),
   outputFileName=cms.string("jecAnalyzerOutput")
 )
 
@@ -50,10 +50,10 @@ process.TFileService = cms.Service("TFileService",
 
 process.btagAnalyzer = cms.EDAnalyzer("WrappedEDAnalysisTasksAnalyzerBTag",
                                       Jets = cms.InputTag("selectedPatJetsPFlow"),    
-                                      bTagAlgo=cms.string('trackCounting'),
-                                      bins=cms.uint32(100),
+                                      bTagAlgo=cms.string('combinedSecondaryVertexBJetTags'),
+                                      bins=cms.uint32(10),
                                       lowerbin=cms.double(0.),
-                                      upperbin=cms.double(10.)
+                                      upperbin=cms.double(1.)
 )
 
 process.p_btag = cms.Path(process.btagAnalyzer)
@@ -66,15 +66,21 @@ process.p_btag = cms.Path(process.btagAnalyzer)
 # EXERCISE 3    #
 #               #
 #################
-
 #Applying the MET Uncertainty tools
-from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
-runMEtUncertainties(process, electronCollection = cms.InputTag("selectedPatElectronsPFlow"), jetCollection="selectedPatJetsPFlow", muonCollection = cms.InputTag("selectedPatMuonsPFlow"), tauCollection = cms.InputTag("selectedPatTausPFlow") )
+# apply type I/type I + II PFMEt corrections to pat::MET object
+# and estimate systematic uncertainties on MET
+from PhysicsTools.PatUtils.tools.runType1PFMEtUncertainties import runType1PFMEtUncertainties
+runType1PFMEtUncertainties(process,addToPatDefaultSequence=False,
+                           jetCollection="selectedPatJetsPFlow",
+                           electronCollection="selectedPatElectronsPFlow",
+                           muonCollection="selectedPatMuonsPFlow",
+                           tauCollection="selectedPatTausPFlow")
 
-
-#process.shiftedPatJetsEnUp=process.shiftedPatJetsPFlowEnUpForCorrMEt.clone(shiftBy=cms.double(2), src="selectedPatJetsPFlow")
+#process.shiftedPatJetsEnUp=process.shiftedPatJetsPFlowEnUp.clone(shiftBy=cms.double(2), src="selectedPatJetsPFlow")
 #process.jecAnalyzerEnUp=process.jecAnalyzer.clone(Jets = cms.InputTag("shiftedPatJetsEnUp"))
 #process.p_jec.__iadd__( process.shiftedPatJetsEnUp *  process.jecAnalyzerEnUp)
+#process.p_jecup = cms.Path( process.shiftedPatJetsEnUp *  process.jecAnalyzerEnUp)
+
 
 #################
 #               #

@@ -48,7 +48,8 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=post
 
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJetCollection(process,
-                    jetSource = cms.InputTag('pfNoTauClones'+postfix),
+                    #jetSource = cms.InputTag('pfNoTauClones'+postfix),
+                    jetSource = cms.InputTag('pfNoTauClonesPFBRECO'+postfix),
                     algo='AK4',
                     rParam=0.4,
                     genJetCollection=cms.InputTag('ak4GenJetsNoNu'+postfix),
