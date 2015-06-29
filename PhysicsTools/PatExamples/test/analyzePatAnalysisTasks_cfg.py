@@ -76,8 +76,11 @@ runType1PFMEtUncertainties(process,addToPatDefaultSequence=False,
                            muonCollection="selectedPatMuonsPFlow",
                            tauCollection="selectedPatTausPFlow")
 
-#process.shiftedPatJetsEnUp=process.shiftedPatJetsPFlowEnUp.clone(shiftBy=cms.double(2), src="selectedPatJetsPFlow")
-#process.jecAnalyzerEnUp=process.jecAnalyzer.clone(Jets = cms.InputTag("shiftedPatJetsEnUp"))
+process.shiftedPatJetsEnUp=process.shiftedPatJetsPFlowEnUp.clone(shiftBy=cms.double(2), 
+                                                                 jetCorrLabelUpToL3 = "", 
+                                                                 jetCorrLabelUpToL3Res = "", 
+                                                                 src="selectedPatJetsPFlow")
+process.jecAnalyzerEnUp=process.jecAnalyzer.clone(Jets = cms.InputTag("shiftedPatJetsEnUp"))
 #process.p_jec.__iadd__( process.shiftedPatJetsEnUp *  process.jecAnalyzerEnUp)
 #process.p_jecup = cms.Path( process.shiftedPatJetsEnUp *  process.jecAnalyzerEnUp)
 
