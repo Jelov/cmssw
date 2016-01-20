@@ -100,9 +100,12 @@ void PatTriggerAnalyzer::beginJob()
   histos2D_[ "phiTrigCand" ]->SetXTitle( "candidate #phi" );
   histos2D_[ "phiTrigCand" ]->SetYTitle( "object #phi" );
   // turn-on curves
-  histos1D_[ "turnOn" ] = fileService->make< TH1D >( "turnOn", "p_{T} (GeV) of matched candidate", 10, 0., 50.);
+  histos1D_[ "turnOn" ] = fileService->make< TH1D >( "turnOn", "p_{T} (GeV) of matched candidate", 80, 0., 80.);
   histos1D_[ "turnOn" ]->SetXTitle( "candidate p_{T} (GeV)" );
   histos1D_[ "turnOn" ]->SetYTitle( "# of objects" );
+  histos1D_[ "recoCand" ] = fileService->make< TH1D >( "recoCand", "p_{T} (GeV) of reco candidate", 80, 0., 80.);
+  histos1D_[ "recoCand" ]->SetXTitle( "reco candidate p_{T} (GeV)" );
+  histos1D_[ "recoCand" ]->SetYTitle( "# of objects" );
   // mean pt for all trigger objects
   histos1D_[ "ptMean" ] = fileService->make< TH1D >( "ptMean", "Mean p_{T} (GeV) per trigger object type", maxID_ - minID_ + 1, minID_ - 0.5, maxID_ + 0.5);
   histos1D_[ "ptMean" ]->SetXTitle( "trigger object type" );
@@ -134,6 +137,7 @@ void PatTriggerAnalyzer::analyze( const edm::Event & iEvent, const edm::EventSet
 
   // loop over muon references (PAT muons have been used in the matcher in task 3)
   for( size_t iMuon = 0; iMuon < muons->size(); ++iMuon ) {
+      histos1D_["recoCand"]->Fill( muons->at( iMuon ).pt() );
     // we need all these ingedients to recieve matched trigger objects from the matchHelper
     const TriggerObjectRef trigRef( matchHelper.triggerMatchObject( muons, iMuon, muonMatch_, iEvent, *triggerEvent ) );
     // finally we can fill the histograms

@@ -18,7 +18,6 @@ patMuons.embedHighLevelSelection = False
 from PhysicsTools.PatAlgos.producersLayer1.jetProducer_cfi import *
 
 ## strip jet content to a minimum
-patJets.embedCaloTowers          = False
 patJets.embedPFCandidates        = False
 patJets.addTagInfos              = False
 patJets.addAssociatedTracks      = False

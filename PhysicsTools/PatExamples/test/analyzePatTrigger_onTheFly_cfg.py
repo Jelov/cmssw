@@ -1,49 +1,30 @@
-import FWCore.ParameterSet.Config as cms
 
-process = cms.Process( "TEST" )
-
-## MessageLogger
-process.load( "FWCore.MessageLogger.MessageLogger_cfi" )
-
-## Options and Output Report
-process.options = cms.untracked.PSet(
-  wantSummary = cms.untracked.bool( False )
-)
-
-## Source
-from PhysicsTools.PatAlgos.tools.cmsswVersionTools import pickRelValInputFiles
-process.source = cms.Source(
-  "PoolSource"
-, fileNames = cms.untracked.vstring(
-    pickRelValInputFiles( cmsswVersion = 'CMSSW_4_2_8'
-                        , globalTag    = 'START42_V12'
-                        )
-  )
-)
-## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet(
-  input = cms.untracked.int32( 1000 ) # reduce number of events for testing
-)
-
-## Geometry and Detector Conditions (needed for a few patTuple production steps)
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.autoCond import autoCond
-process.GlobalTag.globaltag = cms.string( autoCond[ 'startup' ] )
-process.load("Configuration.StandardSequences.MagneticField_cff")
-
-## Standard PAT Configuration File
-process.load("PhysicsTools.PatAlgos.patSequences_cff")
-process.patJetCorrFactors.useRho = False
-
-process.selectedPatMuons.cut = 'isTrackerMuon=1 & isGlobalMuon=1 & innerTrack.numberOfValidHits>=11 & globalTrack.normalizedChi2<10.0  & globalTrack.hitPattern.numberOfValidMuonHits>0 & abs(dB)<0.02 & (trackIso+caloIso)/pt<0.05'
+### ========
+### Skeleton
+### ========
 
 ## ---
-## Define the path
+## Start with pre-defined skeleton process
 ## ---
-process.p = cms.Path(
-  process.patDefaultSequence
-)
+from PhysicsTools.PatAlgos.patTemplate_cfg import *
+
+## switch to uncheduled mode
+process.options.allowUnscheduled = cms.untracked.bool(True)
+#process.Tracer = cms.Service("Tracer")
+
+process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
+process.load("PhysicsTools.PatAlgos.selectionLayer1.selectedPatCandidates_cff")
+
+## ---
+## Modifications
+## ---
+# input files. Let's use Z to mumu sample for this exercise instead of ttbar. 
+process.source.fileNames = ["/store/relval/CMSSW_7_1_0/RelValZMM_13/GEN-SIM-RECO/POSTLS171_V15-v1/00000/6650F961-99FB-E311-BA90-0025905A48BC.root"]
+
+process.maxEvents.input     = 1000 # reduce number of events for testing.
+process.options.wantSummary = True # to suppress the long output at the end of the job
+process.patJets.addTagInfos      = False # to save space
+process.selectedPatMuons.cut     = 'isTrackerMuon=1 & isGlobalMuon=1 & innerTrack.numberOfValidHits>=11 & globalTrack.normalizedChi2<10.0  & globalTrack.hitPattern.numberOfValidMuonHits>0 & abs(dB)<0.02 & (trackIso+caloIso)/pt<0.05'
 
 ### ========
 ### Plug-ins
@@ -56,7 +37,7 @@ process.muonTriggerMatchHLTMuons = cms.EDProducer(
   # matching in DeltaR, sorting by best DeltaR
   "PATTriggerMatcherDRLessByR"
   # matcher input collections
-, src     = cms.InputTag( 'cleanPatMuons' )
+, src     = cms.InputTag( 'selectedPatMuons' )
 , matched = cms.InputTag( 'patTrigger' )
   # selections of trigger objects
 , matchedCuts = cms.string( 'type( "TriggerMuon" ) && path( "HLT_Mu24_v*", 1, 0 )' ) # input does not yet have the 'saveTags' parameter in HLT
@@ -69,23 +50,12 @@ process.muonTriggerMatchHLTMuons = cms.EDProducer(
 , resolveByMatchQuality = cms.bool( True )
 )
 
-### ============
-### Python tools
-### ============
-
-## --
-## Switch to selected PAT objects in the main work flow
-## --
-from PhysicsTools.PatAlgos.tools.coreTools import removeCleaning
-removeCleaning( process, outputInProcess = False )
-
 ## --
 ## Switch on PAT trigger
 ## --
 from PhysicsTools.PatAlgos.tools.trigTools import *
-switchOnTriggerMatching( process, triggerMatchers = [ 'muonTriggerMatchHLTMuons' ], outputModule = '' )
-# Switch to selected PAT objects in the trigger matching
-removeCleaningFromTriggerMatching( process, outputModule = '' )
+switchOnTrigger( process ) # This is optional and can be omitted.
+switchOnTriggerMatching( process, triggerMatchers = [ 'muonTriggerMatchHLTMuons' ] )
 
 ## ---
 ## Add analysis
@@ -101,4 +71,7 @@ process.triggerAnalysis = cms.EDAnalyzer( "PatTriggerAnalyzer",
     minID = cms.uint32( 81 ),
     maxID = cms.uint32( 96 )
 )
-process.p += process.triggerAnalysis
+
+process.p = cms.Path(process.triggerAnalysis)
+
+

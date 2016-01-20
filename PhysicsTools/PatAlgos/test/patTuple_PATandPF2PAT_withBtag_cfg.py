@@ -46,6 +46,20 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=post
 # selection yourself at analysis level!
 #adaptPFTaus(process,"shrinkingConePFTau",postfix=postfix)
 
+from PhysicsTools.PatAlgos.tools.jetTools import *
+switchJetCollection(process,
+                    #jetSource = cms.InputTag('pfNoTauClones'+postfix),
+                    jetSource = cms.InputTag('pfNoTauClonesPFBRECO'+postfix),
+                    algo='AK4',
+                    rParam=0.4,
+                    genJetCollection=cms.InputTag('ak4GenJetsNoNu'+postfix),
+                    postfix=postfix,
+                     jetTrackAssociation=True,
+                    jetCorrections= ('AK4PFchs', ['L1FastJet','L2Relative', 'L3Absolute'], ''),
+                    outputModules =  ['out'],
+                    btagDiscriminators = ['combinedSecondaryVertexBJetTags','jetBProbabilityBJetTags','jetProbabilityBJetTags','trackCountingHighPurBJetTags','trackCountingHighEffBJetTags','simpleSecondaryVertexHighEffBJetTags','simpleSecondaryVertexHighPurBJetTags']
+                     )
+
 
 if not runOnMC:
     # removing MC matching for standard PAT sequence
@@ -66,6 +80,11 @@ process.out.outputCommands = cms.untracked.vstring('drop *',
 						   'keep *_selectedPatPhotons*_*_*',
 						   'keep *_selectedPatTaus*_*_*',
                                                    )
+
+# Temporary fix to have AK5 payloads until the AK4 payloads are ready
+process.patJetCorrFactorsPFlow.payload = 'AK5PFchs' 
+
+
 
 ## ------------------------------------------------------
 #  In addition you usually want to change the following
