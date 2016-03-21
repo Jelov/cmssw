@@ -1,0 +1,9 @@
+*.root
+*.eps
+*.so
+*.d
+*.pdf
+*.jpg
+*.pyc
+*.txt
+*.swp

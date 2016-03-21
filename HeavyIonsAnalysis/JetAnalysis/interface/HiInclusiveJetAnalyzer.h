@@ -78,6 +78,15 @@ private:
   math::XYZPoint getPosition(const DetId &id, reco::Vertex::Point vtx = reco::Vertex::Point(0,0,0));
   int TaggedJet(reco::Jet calojet, edm::Handle<reco::JetTagCollection > jetTags );
 
+  int returnHFJetProdType(const reco::Jet & jet, const int jetPartonFlavor, const reco::GenParticleCollection * genParticles) ;
+
+	int checkDauChare(const reco::GenParticle &gen);
+  int checkDauChare(const reco::Candidate &gen);
+
+	void printDaughterTrees(const reco::GenParticle &gen, int n_charge);
+	void printDaughterTrees(const reco::Candidate &gen);
+
+	
   // edm::InputTag   jetTag_, vtxTag_, genjetTag_, eventInfoTag_, L1gtReadout_, pfCandidateLabel_, trackTag_, matchTag_;
   edm::InputTag   jetTagLabel_;
   edm::EDGetTokenT<std::vector<reco::Vertex> >         vtxTag_;
@@ -132,6 +141,19 @@ private:
   double jetPtMin_;
 
   TTree *t;
+	TH1F  *h_qJet_dR_all;
+  TH1F  *h_qJet_dR_flavormatched;
+	TH1F  *h_B0_decay;
+	TH1F  *h_B0bar_decay;
+  TH1F  *h_Bp_decay;
+  TH1F  *h_Bs_decay;
+	
+  TH1F  *h_B0_chargeDaughters;
+  TH1F  *h_Bpm_chargeDaughters;
+  TH1F  *h_Bs_chargeDaughters;                                              
+  TH1F  *h_Bmesons_chargeDaughters;
+
+
   edm::Service<TFileService> fs1;
 
   const CaloGeometry *geo;
@@ -350,6 +372,27 @@ private:
     float refparton_pt[MAXJETS];
     int refparton_flavor[MAXJETS];
     int refparton_flavorForB[MAXJETS];
+	
+		int refjet_prodChannel[MAXJETS];
+    int ref_q_Twinfound[MAXJETS];
+    float ref_qfJet_dR[MAXJETS];
+    float ref_qfJet_dpt[MAXJETS];
+		float ref_q_pt[MAXJETS];
+		float ref_q_eta[MAXJETS];
+    float ref_q_phi[MAXJETS];
+    float ref_qTwin_pt[MAXJETS];
+    float ref_qTwin_eta[MAXJETS];
+    float ref_qTwin_phi[MAXJETS];
+		float ref_qTwin_dphi[MAXJETS];
+    float ref_qTwin_dtheta[MAXJETS];
+    float ref_qMom_pt[MAXJETS];
+    float ref_qMom_eta[MAXJETS];
+    float ref_qMom_phi[MAXJETS];
+
+
+
+		int refparton_status[MAXJETS];
+		int refparton_isGSP[MAXJETS];
 
     float pthat;
     int beamId1, beamId2;
