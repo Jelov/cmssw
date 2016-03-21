@@ -26,7 +26,9 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
                             fileNames = cms.untracked.vstring(
-                                "root://eoscms.cern.ch//eos/cms/store/cmst3/group/hintt/CMSSW_7_5_8_patch2/TTbar/RECO/Events_1.root"
+#                                "root://eoscms.cern.ch//eos/cms/store/cmst3/group/hintt/CMSSW_7_5_8_patch2/TTbar/RECO/Events_1.root"
+"root://xrootd.unl.edu//store/user/mnguyen/ppBjet/Pythia6_TuneZ2_5020GeV/Pythia6_bjet50_TuneZ2_5020GeV_RECO_v2/160205_172643/0000/step3_1.root", ## bjet50_pythi6 (by matt)
+
                             )
 )
 
